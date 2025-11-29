@@ -3,3 +3,5 @@
 its just poker :)
 
 and will have a poker bot (soon™)
+
+After the bot is done I'll make another repo for that. Probably will need alot of editing if you want to use it outside of my project.
