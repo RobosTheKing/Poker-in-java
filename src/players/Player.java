@@ -81,13 +81,13 @@ public class Player {
         long cards = 0;
         
         for (CardObj cardObj : combinedCards) {
-            cards = setBit(cards, cardObj.getRepresentingCard().getCard());
+            cards = setBitTo1(cards, cardObj.getRepresentingCard().getCard());
         }
 
         return EvaluateHand.evaluate7(cards);
     }
 
-    private long setBit(long value, int index) {
+    private long setBitTo1(long value, int index) {
         return value | (1 << index);
     }
 

@@ -47,15 +47,15 @@ public class EvaluateHand {
     
     public static int evaluate7(long cardMask) {
         long clubs    = cardMask & CLUB_MASK;
-        long diamonds = cardMask & DIAMOND_MASK;
         long hearts   = cardMask & HEART_MASK;
         long spades   = cardMask & SPADE_MASK;
+        long diamonds = cardMask & DIAMOND_MASK;
 
         long flushMask = 0;
         if (Long.bitCount(clubs) >= 5)    flushMask = clubs;
-        else if (Long.bitCount(diamonds) >= 5) flushMask = diamonds;
         else if (Long.bitCount(hearts) >= 5)   flushMask = hearts;
         else if (Long.bitCount(spades) >= 5)   flushMask = spades;
+        else if (Long.bitCount(diamonds) >= 5) flushMask = diamonds;
         
         if (flushMask > 0) {
             int i = 0;
@@ -67,8 +67,25 @@ public class EvaluateHand {
 
             flushMask = flushMask << i;
         }
+
+        long rankMask = clubs | (hearts >> 13) | (spades >> 26) | (diamonds >> 39);
+
+        int straghtValue = STRAIGHT_TABLE[(int) rankMask];
+        System.out.println(straghtValue);
         
         return -1;
     }
-    
+
+    private int getBit(int value, int index) {
+        return (value >> index) & 1;
+    }
+
+    private int index(int rank, int suit) {
+        return suit * 13 + rank;
+    }
+
+    private long cardMask(int rank, int suit) {
+        return 1L << index(rank, suit);
+    }
+
 }
