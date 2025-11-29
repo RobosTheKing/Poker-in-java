@@ -1,144 +1,74 @@
 package cardRelated;
 
 public class EvaluateHand {
-    static private boolean isRoyalFlush(CardHand cardHand) {
-        return isStraightFlush(cardHand) &&
-               cardHand.getCard(0).getNumber() == 12 &&
-               cardHand.getCard(4).getNumber() != 0;
-    }
+    public static final long CLUB_MASK = (1L << 13) - 1;
+    public static final long HEART_MASK = CLUB_MASK << 13;
+    public static final long SPADE_MASK = CLUB_MASK << 26;
+    public static final long DIAMOND_MASK = CLUB_MASK << 39;
 
-    static private boolean isFlush(CardHand cardHand) {
-        return cardHand.getCard(0).getSuit() == cardHand.getCard(1).getSuit() &&
-               cardHand.getCard(1).getSuit() == cardHand.getCard(2).getSuit() &&
-               cardHand.getCard(2).getSuit() == cardHand.getCard(3).getSuit() &&
-               cardHand.getCard(3).getSuit() == cardHand.getCard(4).getSuit();
-    }
+    public static final int RANKS = 13;
+    public static final int TABLE_SIZE = 1 << RANKS;
 
-    static private boolean isStraight(CardHand cardHand) {
-        return (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() + 1 &&
-                cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() + 1 &&
-                cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber() + 1 &&
-                cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber() + 1) ||
-               (cardHand.getCard(0).getNumber() == 12 &&
-                cardHand.getCard(1).getNumber() == 3 &&
-                cardHand.getCard(2).getNumber() == 2 &&
-                cardHand.getCard(3).getNumber() == 1 &&
-                cardHand.getCard(4).getNumber() == 0);
-    }
+    public static final int[] STRAIGHT_TABLE = buildStraightTable();
 
-    static private boolean isStraightFlush(CardHand cardHand) {
-        return isFlush(cardHand) && isStraight(cardHand);
-    }
+    public static final int[] buildStraightTable() {
+        int[] table = new int[TABLE_SIZE];
 
-    static private boolean isFour(CardHand cardHand) {
-        return (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() &&
-                cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber()) ||
-               (cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() &&
-                cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber() &&
-                cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber());
-    }
+        for (int i = 0; i < table.length; i++) table[i] = -1;
 
-    static private boolean isThree(CardHand cardHand) {
-        return (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber()) ||
-               (cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() &&
-                cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber()) ||
-               (cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber() &&
-                cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber());
-    }
+        int[] patterns = new int[10];
+        for (int start = 0; start < 9; start++) {
+            int pat = 0;
+            for (int k = 0; k < 5; k++) {
+                pat |= (1 << (start + k));
+            }
+            patterns[start] = pat;
+        }
 
-    static private boolean isTwoPair(CardHand cardHand) {
-        return (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber()) ||
-               (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber()) ||
-               (cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() &&
-                cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber());
-    }
+        patterns[9] = (1 << 12) | (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
 
-    static private boolean isPair(CardHand cardHand) {
-        return cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() ||
-               cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber() ||
-               cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber() ||
-               cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber();
-    }
 
-    static private boolean isFullHouse(CardHand cardHand) {
-        return (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                (cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber() &&
-                 cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber())) ||
-               (cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber() &&
-                (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() &&
-                 cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber()));
-    }
+        int[] highest = new int[10];
+        for (int start = 0; start <= 8; start++) highest[start] = start + 4;
+        highest[9] = 3;
 
-    static public long evaluateHand(CardHand cardHand) {
-        cardHand.sortByValue();
-        if (isRoyalFlush(cardHand)) return 100000000000L;
-        if (isStraightFlush(cardHand)) return 99999999999L;
-        if (isFour(cardHand)) return 99999999998L;
-        if (isFullHouse(cardHand)) {
-            if (cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber()) {
-                return 90000000000L + cardHand.getCard(0).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else {
-                return 90000000000L + cardHand.getCard(4).getNumber() * 100 + cardHand.getCard(0).getNumber();
+        for (int mask = 0; mask < TABLE_SIZE; mask++) {
+            for (int p = 0; p < patterns.length; p++) {
+                int pat = patterns[p];
+                if ((mask & pat) == pat) {
+                    if (highest[p] > table[mask]) table[mask] = highest[p];
+                }
             }
         }
-        if (isFlush(cardHand)) {
-            return 80000000000L + cardHand.getCard(0).getNumber();
-        }
-        if (isStraight(cardHand)) {
-            return 70000000000L + cardHand.getCard(0).getNumber();
-        }
 
-        if (isThree(cardHand)) {
-            if (cardHand.getCard(0).getNumber() == cardHand.getCard(2).getNumber()) {
-                return 60000000000L + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else if (cardHand.getCard(1).getNumber() == cardHand.getCard(3).getNumber()) {
-                return 60000000000L + cardHand.getCard(1).getNumber() * 10000 + cardHand.getCard(0).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else {
-                return 60000000000L + cardHand.getCard(2).getNumber() * 10000 + cardHand.getCard(0).getNumber() * 100 + cardHand.getCard(1).getNumber();
-            }
-        }
-        if (isTwoPair(cardHand)) {
-            if (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() && cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber()) {
-               return 50000000000L + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(2).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else if (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber() && cardHand.getCard(3).getNumber() == cardHand.getCard(4).getNumber()) {
-                return 50000000000L + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(2).getNumber();
-            } else {
-                return 50000000000L + cardHand.getCard(1).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(0).getNumber();
-            }
-        }
-        if (isPair(cardHand)) {
-            if (cardHand.getCard(0).getNumber() == cardHand.getCard(1).getNumber()) {
-                return 40000000000L + cardHand.getCard(0).getNumber() * 1000000 + cardHand.getCard(2).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else if (cardHand.getCard(1).getNumber() == cardHand.getCard(2).getNumber()) {
-                return 40000000000L + cardHand.getCard(1).getNumber() * 1000000 + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else if (cardHand.getCard(2).getNumber() == cardHand.getCard(3).getNumber()) {
-                return 40000000000L + cardHand.getCard(2).getNumber() * 1000000 + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(1).getNumber() * 100 + cardHand.getCard(4).getNumber();
-            } else {
-                return 40000000000L + cardHand.getCard(3).getNumber() * 1000000 + cardHand.getCard(0).getNumber() * 10000 + cardHand.getCard(1).getNumber() * 100 + cardHand.getCard(2).getNumber();
-            }
-        }
-        return cardHand.getCard(0).getNumber() * 100000000 + cardHand.getCard(1).getNumber() * 1000000 + cardHand.getCard(2).getNumber() * 10000 + cardHand.getCard(3).getNumber() * 100 + cardHand.getCard(4).getNumber();
+        return table;
     }
 
-    public static void main(String[] args) {
-        Card card1 = new Card(12, 0);
-        Card card2 = new Card(10, 1);
-        Card card3 = new Card(10, 0);
-        Card card4 = new Card(9, 0);
-        Card card5 = new Card(8, 0);
+    
+    public static int evaluate7(long cardMask) {
+        long clubs    = cardMask & CLUB_MASK;
+        long diamonds = cardMask & DIAMOND_MASK;
+        long hearts   = cardMask & HEART_MASK;
+        long spades   = cardMask & SPADE_MASK;
 
-        CardHand hand = new CardHand();
-        hand.addCard(card1);
-        hand.addCard(card2);
-        hand.addCard(card3);
-        hand.addCard(card4);
-        hand.addCard(card5);
+        long flushMask = 0;
+        if (Long.bitCount(clubs) >= 5)    flushMask = clubs;
+        else if (Long.bitCount(diamonds) >= 5) flushMask = diamonds;
+        else if (Long.bitCount(hearts) >= 5)   flushMask = hearts;
+        else if (Long.bitCount(spades) >= 5)   flushMask = spades;
+        
+        if (flushMask > 0) {
+            int i = 0;
 
+            while (Long.bitCount(flushMask) > 5) {
+                i++;
+                flushMask = flushMask >> 1;
+            }
 
-        System.out.println(evaluateHand(hand));
+            flushMask = flushMask << i;
+        }
+        
+        return -1;
     }
+    
 }

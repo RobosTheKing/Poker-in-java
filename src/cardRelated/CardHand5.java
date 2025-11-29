@@ -1,9 +1,17 @@
 package cardRelated;
 
-public class CardHand {
+public class CardHand5 {
     private Card[] cardHand = new Card[5];
     private int handValue = 0;
     private int cardNum = 0;
+
+    public CardHand5(Card card1, Card card2, Card card3, Card card4, Card card5) {
+        cardHand[0] = card1;
+        cardHand[1] = card2;
+        cardHand[2] = card3;
+        cardHand[3] = card4;
+        cardHand[4] = card5;
+    }
 
     public void addCard(Card card) {
         cardHand[cardNum] = card;

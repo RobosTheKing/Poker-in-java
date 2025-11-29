@@ -11,8 +11,11 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.AttributeSet;
 
 public class PlayerUI extends JPanel {
+    @SuppressWarnings("unused")
     private final Color border = new Color(255, 255, 255);
+    @SuppressWarnings("unused")
     private final Color inside = new Color(0, 0, 0, 50);
+
     private final DocumentFilter numberFilter = new DocumentFilter() {
         @Override
         public void insertString(final FilterBypass fb, final int offset, final String string, final AttributeSet attr)
@@ -52,6 +55,7 @@ public class PlayerUI extends JPanel {
         call.setBounds(520, 20, 400, 100);
         raise.setBounds(1020, 20, 400, 100);
         check.setBounds(1520, 20, 400, 100);
+
         
     }
 }

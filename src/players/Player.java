@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import cardRelated.Card;
-import cardRelated.CardHand;
+import cardRelated.CardHand5;
+import cardRelated.CardHand7;
 import cardRelated.EvaluateHand;
 import panel.Coordinates;
 import panel.CardObj;
 import javaIsStupid.*;
 
 public class Player {
-    public static final int[][] BASE7_CODES = {{0,1,2,3,4},{0,1,2,3,5},{0,1,2,3,6},{0,1,2,4,5},{0,1,2,4,6},{0,1,2,5,6},{0,1,3,4,5},{0,1,3,4,6},{0,1,3,5,6},{0,1,4,5,6},{0,2,3,4,5},{0,2,3,4,6},{0,2,3,5,6},{0,2,4,5,6},{0,3,4,5,6},{1,2,3,4,5},{1,2,3,4,6},{1,2,3,5,6},{1,2,4,5,6},{1,3,4,5,6},{2,3,4,5,6}};
-    private CardObj[] cardObjs = new CardObj[10];
+    private CardObj[] cardObjs = new CardObj[2];
     private int cardNum = 0;
     private int cash = 1000;
     private int bet = 0;
@@ -72,22 +72,23 @@ public class Player {
         return cardObjs[i];
     }
 
+    public long evalCards(Dealer dealer) {
+        return evalCards(dealer.getComunityCards());
+    }
+
     public long evalCards(CardObj[] comunityCards) {
-        int[] indexes = null;
         CardObj[] combinedCards = Stream.concat(Arrays.stream(comunityCards), Arrays.stream(cardObjs)).toArray(CardObj[]::new);
-        long bestValue = 0;
-        for (int i = 0; i < BASE7_CODES.length; i++) {
-            indexes = BASE7_CODES[i];
-            CardHand hand = new CardHand();
-            for (int j = 0; j < indexes.length; j++) {
-                hand.addCard(combinedCards[indexes[j]].getRepresentingCard());
-            }
-            long value = EvaluateHand.evaluateHand(hand);
-            if (bestValue < value) {
-                bestValue = value;
-            }
+        long cards = 0;
+        
+        for (CardObj cardObj : combinedCards) {
+            cards = setBit(cards, cardObj.getRepresentingCard().getCard());
         }
-        return bestValue;
+
+        return EvaluateHand.evaluate7(cards);
+    }
+
+    private long setBit(long value, int index) {
+        return value | (1 << index);
     }
 
     public boolean isPlayer() {

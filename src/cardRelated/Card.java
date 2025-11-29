@@ -77,6 +77,10 @@ public class Card {
         return card % 13;
     }
 
+    public int getCard() {
+        return card;
+    }
+
     public String getCardName() {
         return cardName;
     }

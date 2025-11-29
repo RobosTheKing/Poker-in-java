@@ -20,7 +20,6 @@ public class CardObj {
     private double angle, rads;
     private double angleOffset, radsOffset, angleOffsetBefore;
     private boolean picked = false, fliped = false;
-    private double angleBeforePicked, radsBeforePicked;
     private boolean humans = false, viggling = false, rotating = false, moving = false, offsetRotating = false;
     private boolean pickable = false;
 
@@ -31,9 +30,7 @@ public class CardObj {
         this.width = width;
         this.height = height;
         this.angle = angle;
-        this.angleBeforePicked = angle;
         this.rads = Math.toRadians(angle);
-        this.radsBeforePicked = this.rads;
         this.scaledWidth = height * Math.sin(rads) + width * Math.cos(rads);
         this.scaledHeight = height * Math.cos(rads) + width * Math.sin(rads);
         this.imgDirectory = "/assets/card_sprites/" + card.getCardName() + ".png";
