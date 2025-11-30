@@ -1,14 +1,12 @@
-package players;
+package players.botStuff;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import cardRelated.Card;
-import cardRelated.CardHand5;
-import cardRelated.CardHand7;
-import cardRelated.EvaluateHand;
+import cardRelated.*;
 import panel.Coordinates;
 import panel.CardObj;
+import players.Dealer;
 import javaIsStupid.*;
 
 public class Player {
@@ -87,8 +85,15 @@ public class Player {
         return EvaluateHand.evaluate7(cards);
     }
 
+    // 0000000000000000000000000000000000110010000000001010001000000100
+    // 0000000000000000000000000000000000100000000000000000000000000000
+
     private long setBitTo1(long value, int index) {
-        return value | (1 << index);
+        if (index < 0 || index >= Long.SIZE) {
+            throw new IllegalArgumentException("bit index out of range: " + index);
+        }
+        long mask = 1L << index;
+        return value | mask;
     }
 
     public boolean isPlayer() {

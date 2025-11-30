@@ -9,7 +9,8 @@ import javax.swing.JFrame;
 
 import panel.*;
 import cardRelated.*;
-import players.*;
+import players.Dealer;
+import players.botStuff.Player;
 import javaIsStupid.*;
 
 public class App {
@@ -20,19 +21,23 @@ public class App {
     // 3 = diamonds
 
     // value numbers:
-    // 0 = two
-    // 1 = three
-    // 2 = four
-    // 3 = five
-    // 4 = six
-    // 5 = seven
-    // 6 = eight
-    // 7 = nine
-    // 8 = ten
-    // 9 = jack
-    // 10 = queen
-    // 11 = king
-    // 12 = ace
+    // 0 = two      0000
+    // 1 = three    0001
+    // 2 = four     0010
+    // 3 = five     0011
+    // 4 = six      0100
+    // 5 = seven    0101
+    // 6 = eight    0110
+    // 7 = nine     0111
+    // 8 = ten      1000
+    // 9 = jack     1001
+    // 10 = queen   1010
+    // 11 = king    1011
+    // 12 = ace     1100
+
+    // 00000000001000000000100110011011
+
+    // 000000000000000000000100000000000000000000000000000001000000000
 
 
     static boolean isDealing = false;
